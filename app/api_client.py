@@ -26,6 +26,9 @@ def get_ai_response(messages):
 
     response.raise_for_status()
 
-    result = response.json()
+    try:
+        result = response.json()
+        return result["choices"][0]["message"]["content"]
 
-    return result["choices"][0]["message"]["content"]
+    except(ValueError, KeyError, IndexError, TypeError):
+        raise ValueError("Unexpected response received from the AI service.")
