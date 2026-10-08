@@ -1,11 +1,12 @@
 import requests
 
 from api_client import get_ai_response
-from storage import create_conversation, load_conversation, save_conversation
+from conversation import add_message, create_conversation, get_messages
+from storage import load_conversation, save_conversation
 
 
 def display_history(conversation):
-    messages = conversation["messages"]
+    messages = get_messages(conversation)
 
     if not messages:
         print("\nNo conversation history.\n")
@@ -50,23 +51,16 @@ def main():
             print("Error: Message cannot be empty.\n")
             continue
 
-        conversation["messages"].append({
-            "role": "user",
-            "content": message,
-        })
+        add_message(conversation, "user", message)
 
         try:
-            ai_response = get_ai_response(conversation["messages"])
+            ai_response = get_ai_response(get_messages(conversation))
 
             print("\nAI:")
             print(ai_response)
             print()
 
-            conversation["messages"].append({
-                "role": "assistant",
-                "content": ai_response,
-            })
-
+            add_message(conversation, "assistant", ai_response)
             save_conversation(conversation)
 
         except ValueError as error:

@@ -1,18 +1,11 @@
 import json
-from datetime import datetime
 from pathlib import Path
 
+from conversation import create_conversation
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 CONVERSATION_FILE = DATA_DIR / "conversations.json"
-
-
-def create_conversation():
-    return {
-        "created_at": datetime.now().isoformat(),
-        "messages": [],
-    }
 
 
 def load_conversation():
