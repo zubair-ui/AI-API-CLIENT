@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from pathlib import Path
 
 
@@ -7,16 +8,31 @@ DATA_DIR = BASE_DIR / "data"
 CONVERSATION_FILE = DATA_DIR / "conversations.json"
 
 
+def create_conversation():
+    return {
+        "created_at": datetime.now().isoformat(),
+        "messages": [],
+    }
+
+
 def load_conversation():
     if not CONVERSATION_FILE.exists():
-        return []
+        return create_conversation()
 
     try:
         with open(CONVERSATION_FILE, "r", encoding="utf-8") as file:
-            return json.load(file)
+            conversation = json.load(file)
+
+        if not isinstance(conversation, dict):
+            return create_conversation()
+
+        if "messages" not in conversation:
+            return create_conversation()
+
+        return conversation
 
     except (json.JSONDecodeError, OSError):
-        return []
+        return create_conversation()
 
 
 def save_conversation(conversation):

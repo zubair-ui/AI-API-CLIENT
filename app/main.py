@@ -1,17 +1,19 @@
 import requests
 
 from api_client import get_ai_response
-from storage import load_conversation, save_conversation
+from storage import create_conversation, load_conversation, save_conversation
 
 
 def display_history(conversation):
-    if not conversation:
+    messages = conversation["messages"]
+
+    if not messages:
         print("\nNo conversation history.\n")
         return
 
     print("\n--- Conversation History ---")
 
-    for message in conversation:
+    for message in messages:
         role = message["role"].capitalize()
         content = message["content"]
 
@@ -35,7 +37,7 @@ def main():
             break
 
         if message.lower() == "/new":
-            conversation = []
+            conversation = create_conversation()
             save_conversation(conversation)
             print("\nStarted a new conversation.\n")
             continue
@@ -48,19 +50,19 @@ def main():
             print("Error: Message cannot be empty.\n")
             continue
 
-        conversation.append({
+        conversation["messages"].append({
             "role": "user",
             "content": message,
         })
 
         try:
-            ai_response = get_ai_response(conversation)
+            ai_response = get_ai_response(conversation["messages"])
 
             print("\nAI:")
             print(ai_response)
             print()
 
-            conversation.append({
+            conversation["messages"].append({
                 "role": "assistant",
                 "content": ai_response,
             })
