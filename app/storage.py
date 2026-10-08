@@ -1,12 +1,14 @@
 import json
-import os
+from pathlib import Path
 
 
-CONVERSATION_FILE = "data/conversations.json"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+CONVERSATION_FILE = DATA_DIR / "conversations.json"
 
 
 def load_conversation():
-    if not os.path.exists(CONVERSATION_FILE):
+    if not CONVERSATION_FILE.exists():
         return []
 
     try:
@@ -18,7 +20,7 @@ def load_conversation():
 
 
 def save_conversation(conversation):
-    os.makedirs("data", exist_ok=True)
+    DATA_DIR.mkdir(exist_ok=True)
 
     with open(CONVERSATION_FILE, "w", encoding="utf-8") as file:
         json.dump(

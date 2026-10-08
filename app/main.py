@@ -1,3 +1,5 @@
+import requests
+
 from api_client import get_ai_response
 from storage import load_conversation, save_conversation
 
