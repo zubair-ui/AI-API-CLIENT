@@ -1,3 +1,4 @@
+import json
 import os
 
 import requests
@@ -17,6 +18,21 @@ if not message:
     print("Error: Message cannot be empty.")
     exit()
 
+conversation_file = "data/conversations.json"
+
+# Load existing conversation
+if os.path.exists(conversation_file):
+    with open(conversation_file, "r", encoding="utf-8") as file:
+        conversation = json.load(file)
+else:
+    conversation = []
+
+# Add user's new message
+conversation.append({
+    "role": "user",
+    "content": message,
+})
+
 url = "https://openrouter.ai/api/v1/chat/completions"
 
 headers = {
@@ -26,12 +42,7 @@ headers = {
 
 data = {
     "model": "openrouter/free",
-    "messages": [
-        {
-            "role": "user",
-            "content": message,
-        }
-    ],
+    "messages": conversation,
 }
 
 try:
@@ -50,6 +61,18 @@ try:
 
     print("\nAI:")
     print(ai_response)
+
+    # Add AI response to conversation
+    conversation.append({
+        "role": "assistant",
+        "content": ai_response,
+    })
+
+    # Save updated conversation
+    os.makedirs("data", exist_ok=True)
+
+    with open(conversation_file, "w", encoding="utf-8") as file:
+        json.dump(conversation, file, indent=4, ensure_ascii=False)
 
 except requests.exceptions.RequestException as error:
     print(f"\nError: API request failed: {error}")
